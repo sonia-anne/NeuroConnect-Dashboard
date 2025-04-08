@@ -1,12 +1,14 @@
+import streamlit as st
+from streamlit_dash import st_dash
 import dash
-from dash import html, dcc
+from dash import html
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import pandas as pd
 
-# =======================
-# 🔬 REAL MEDICAL DATA
-# =======================
+# -----------------------
+# Dash app configuration
+# -----------------------
 df = pd.DataFrame({
     "Treatment": ["ABA Therapy", "Risperidone", "NeuroConnect"],
     "Lifetime Cost (USD)": [1200000, 250000, 2500],
@@ -20,16 +22,8 @@ df = pd.DataFrame({
     "Application Frequency": ["Daily", "Daily", "Single use"]
 })
 
-# =======================
-# 🌐 DASH APP SETUP
-# =======================
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
-server = app.server  # For deployment
-
-# =======================
-# 🚀 APP LAYOUT
-# =======================
-app.layout = dbc.Container([
+dash_app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
+dash_app.layout = dbc.Container([
     html.H2("🧠 NeuroConnect vs Traditional Autism Treatments",
             style={"color": "#00FFFF", "marginTop": "20px", "textAlign": "center"}),
 
@@ -63,5 +57,11 @@ app.layout = dbc.Container([
         style={"height": "400px", "width": "100%", "marginTop": "20px"}
     )
 ])
-if __name__ == '__main__':
-    app.run_server(debug=True)
+
+# ----------------------------------
+# Embed Dash app in Streamlit
+# ----------------------------------
+st.set_page_config(page_title="NeuroConnect Dashboard", layout="wide")
+st.title("🚀 NeuroConnect: Streamlit + Dash Comparison Interface")
+
+st_dash(dash_app, width=1000, height=550)
