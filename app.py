@@ -1,70 +1,56 @@
 import streamlit as st
 import plotly.graph_objects as go
 
-st.set_page_config(page_title="NeuroConnect vs Traditional Treatments", layout="wide")
-st.title("🔬 Advanced Comparative Analysis: NeuroConnect vs Traditional Autism Treatments")
+st.set_page_config(page_title="Advanced Comparison – NeuroConnect", layout="wide")
+st.title("🔬 Multivariable Comparison: NeuroConnect vs Traditional Treatments")
 
+# Datos
 treatments = ["ABA Therapy", "Risperidone", "NeuroConnect"]
-costs = [1200000, 250000, 2500]
-efficacy = [40, 30, 89]
-duration = [0.5, 1, 10]  # años
-side_effects_score = [8, 7, 0]  # escala cualitativa 0-10
-colors = ["#FF5733", "#FFC300", "#33FF57"]
+metrics = ["Lifetime Cost (USD)", "Effectiveness (%)", "Duration (Years)", "Side Effects (Score)"]
+
+values = [
+    [1200000, 40, 0.5, 8],
+    [250000, 30, 1, 7],
+    [2500, 89, 10, 0]
+]
+
+colors = ["#EF553B", "#00CC96", "#AB63FA", "#FFA15A"]
 
 fig = go.Figure()
 
-# Costo de vida
-fig.add_trace(go.Bar(
-    x=treatments,
-    y=costs,
-    name='💰 Cost (USD, Lifetime)',
-    marker_color=colors,
-    text=[f"${c:,.0f}" for c in costs],
-    textposition='inside'
-))
+for i, metric in enumerate(metrics):
+    fig.add_trace(go.Bar(
+        x=treatments,
+        y=[row[i] for row in values],
+        name=f"{metric}",
+        marker=dict(color=colors[i], line=dict(color='white', width=1)),
+        text=[f"${v:,}" if i == 0 else f"{v}%" if i == 1 else f"{v} yrs" if i == 2 else f"{v}/10" for v in [row[i] for row in values]],
+        textposition="auto",
+        opacity=0.85
+    ))
 
-# Eficacia
-fig.add_trace(go.Bar(
-    x=treatments,
-    y=efficacy,
-    name='🎯 Effectiveness (%)',
-    marker_color=colors,
-    text=[f"{e}%" for e in efficacy],
-    textposition='inside'
-))
-
-# Duración
-fig.add_trace(go.Bar(
-    x=treatments,
-    y=duration,
-    name='⏳ Duration (Years)',
-    marker_color=colors,
-    text=[f"{d} yrs" for d in duration],
-    textposition='inside'
-))
-
-# Efectos secundarios
-fig.add_trace(go.Bar(
-    x=treatments,
-    y=side_effects_score,
-    name='⚠️ Side Effects (Score)',
-    marker_color=colors,
-    text=["Severe stress", "Obesity, sedation", "None"],
-    textposition='inside'
-))
-
-# Layout avanzado
 fig.update_layout(
     barmode='group',
-    title='📊 NeuroConnect vs Traditional Treatments: Scientific Comparative Matrix',
-    xaxis_title='Treatment Type',
-    yaxis_title='Metric Scale (Mixed Units)',
-    legend_title='Comparison Dimensions',
-    template='plotly_dark',
-    font=dict(size=12, color='white'),
-    plot_bgcolor='rgba(0,0,0,0)',
-    paper_bgcolor='rgba(10,10,10,1)',
-    height=720
+    title={
+        'text': "🧠 Comparative Matrix: Cost, Efficacy, Duration & Risks",
+        'y':0.92,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'
+    },
+    template="plotly_dark",
+    paper_bgcolor="rgb(5,5,15)",
+    plot_bgcolor="rgb(0,0,0)",
+    font=dict(family="Arial", size=15, color="white"),
+    legend=dict(
+        title="Metric",
+        bgcolor="rgba(0,0,0,0.4)",
+        bordercolor="rgba(255,255,255,0.2)",
+        borderwidth=1
+    ),
+    xaxis=dict(title="Treatment Type", tickangle=-15),
+    yaxis=dict(title="Value", gridcolor="rgba(255,255,255,0.1)"),
+    height=680
 )
 
 st.plotly_chart(fig, use_container_width=True)
