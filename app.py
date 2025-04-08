@@ -1,72 +1,70 @@
+import streamlit as st
 import plotly.graph_objects as go
-import pandas as pd
 
-# Datos comparativos avanzados
-df = pd.DataFrame({
-    "Treatment": ["ABA Therapy", "Risperidone", "NeuroConnect"],
-    "Lifetime Cost (USD)": [1200000, 250000, 2500],
-    "Effectiveness (%)": [40, 30, 89],
-    "Side Effects": [
-        "Emotional stress\n(Burnout, frustration)",
-        "Obesity, sedation\n(Metabolic impact)",
-        "None documented\n(Biocompatible nanotech)"
-    ],
-    "Duration": [
-        "Continuous sessions\n(20+ years)",
-        "Short-term relief\n(1–2 years)",
-        "Long-term effect\n(10 years, one-time)"
-    ]
-})
+st.set_page_config(page_title="NeuroConnect vs Traditional Treatments", layout="wide")
+st.title("🔬 Advanced Comparative Analysis: NeuroConnect vs Traditional Autism Treatments")
 
-# Crear tabla visual avanzada
-fig = go.Figure(data=[go.Table(
-    header=dict(
-        values=[
-            "<b>Treatment</b>",
-            "<b>Lifetime Cost (USD)</b>",
-            "<b>Effectiveness (%)</b>",
-            "<b>Side Effects</b>",
-            "<b>Duration of Results</b>"
-        ],
-        fill_color='rgb(10,10,40)',
-        line_color='white',
-        align='center',
-        font=dict(color='white', size=14),
-        height=40
-    ),
-    cells=dict(
-        values=[
-            df["Treatment"],
-            ["$ {:,}".format(x) for x in df["Lifetime Cost (USD)"]],
-            ["{}%".format(x) for x in df["Effectiveness (%)"]],
-            df["Side Effects"],
-            df["Duration"]
-        ],
-        fill_color=[
-            ['rgba(240,100,100,0.2)', 'rgba(255,195,0,0.2)', 'rgba(100,255,100,0.2)'],  # Cost
-            ['rgba(240,100,100,0.1)', 'rgba(255,195,0,0.1)', 'rgba(100,255,100,0.1)'],  # Efficacy
-            ['rgba(240,100,100,0.05)', 'rgba(255,195,0,0.05)', 'rgba(100,255,100,0.05)'],  # Side effects
-            ['rgba(240,100,100,0.05)', 'rgba(255,195,0,0.05)', 'rgba(100,255,100,0.05)']   # Duration
-        ],
-        line_color='white',
-        align='center',
-        font=dict(color='white', size=13),
-        height=80
-    )
-)])
+treatments = ["ABA Therapy", "Risperidone", "NeuroConnect"]
+costs = [1200000, 250000, 2500]
+efficacy = [40, 30, 89]
+duration = [0.5, 1, 10]  # años
+side_effects_score = [8, 7, 0]  # escala cualitativa 0-10
+colors = ["#FF5733", "#FFC300", "#33FF57"]
 
-# Diseño
+fig = go.Figure()
+
+# Costo de vida
+fig.add_trace(go.Bar(
+    x=treatments,
+    y=costs,
+    name='💰 Cost (USD, Lifetime)',
+    marker_color=colors,
+    text=[f"${c:,.0f}" for c in costs],
+    textposition='inside'
+))
+
+# Eficacia
+fig.add_trace(go.Bar(
+    x=treatments,
+    y=efficacy,
+    name='🎯 Effectiveness (%)',
+    marker_color=colors,
+    text=[f"{e}%" for e in efficacy],
+    textposition='inside'
+))
+
+# Duración
+fig.add_trace(go.Bar(
+    x=treatments,
+    y=duration,
+    name='⏳ Duration (Years)',
+    marker_color=colors,
+    text=[f"{d} yrs" for d in duration],
+    textposition='inside'
+))
+
+# Efectos secundarios
+fig.add_trace(go.Bar(
+    x=treatments,
+    y=side_effects_score,
+    name='⚠️ Side Effects (Score)',
+    marker_color=colors,
+    text=["Severe stress", "Obesity, sedation", "None"],
+    textposition='inside'
+))
+
+# Layout avanzado
 fig.update_layout(
-    title={
-        'text': "🚀 Comparative Neurotech Matrix: Why NeuroConnect Outperforms Traditional Autism Treatments",
-        'y':0.95,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'
-    },
-    paper_bgcolor="rgb(5,5,20)",
-    margin=dict(l=10, r=10, t=80, b=10),
-    height=500
+    barmode='group',
+    title='📊 NeuroConnect vs Traditional Treatments: Scientific Comparative Matrix',
+    xaxis_title='Treatment Type',
+    yaxis_title='Metric Scale (Mixed Units)',
+    legend_title='Comparison Dimensions',
+    template='plotly_dark',
+    font=dict(size=12, color='white'),
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(10,10,10,1)',
+    height=720
 )
 
-fig.show()
+st.plotly_chart(fig, use_container_width=True)
