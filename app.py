@@ -1,14 +1,17 @@
 import streamlit as st
-from streamlit_dash import st_dash
-import dash
-from dash import html
-import dash_ag_grid as dag
-import dash_bootstrap_components as dbc
 import pandas as pd
+from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
 
-# -----------------------
-# Dash app configuration
-# -----------------------
+# Page setup
+st.set_page_config(page_title="NeuroConnect Dashboard", layout="wide")
+
+# Title and Description
+st.markdown("<h1 style='color:#00ffff;'>🧠 NeuroConnect vs Traditional Autism Treatments</h1>", unsafe_allow_html=True)
+st.markdown("""
+Compare costs, efficacy, and side effects of major autism therapies, including **NeuroConnect** – a proposed nanotechnology-based solution to target root causes of autism spectrum conditions with precision and ethics.
+""")
+
+# Data Table
 df = pd.DataFrame({
     "Treatment": ["ABA Therapy", "Risperidone", "NeuroConnect"],
     "Lifetime Cost (USD)": [1200000, 250000, 2500],
@@ -22,46 +25,38 @@ df = pd.DataFrame({
     "Application Frequency": ["Daily", "Daily", "Single use"]
 })
 
-dash_app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
-dash_app.layout = dbc.Container([
-    html.H2("🧠 NeuroConnect vs Traditional Autism Treatments",
-            style={"color": "#00FFFF", "marginTop": "20px", "textAlign": "center"}),
+# Grid Configuration
+gb = GridOptionsBuilder.from_dataframe(df)
+gb.configure_default_column(editable=False, groupable=True)
+gb.configure_column("Lifetime Cost (USD)", type=["numericColumn"], cellStyle=JsCode("""
+    function(params) {
+        if (params.value > 100000) {
+            return { 'color': 'red', 'fontWeight': 'bold' };
+        } else {
+            return { 'color': 'lime', 'fontWeight': 'bold' };
+        }
+    }
+"""))
+gb.configure_column("Efficacy (%)", type=["numericColumn"], cellStyle=JsCode("""
+    function(params) {
+        if (params.value >= 80) {
+            return { 'backgroundColor': '#003300', 'color': 'white' };
+        } else if (params.value <= 40) {
+            return { 'backgroundColor': '#330000', 'color': 'white' };
+        }
+    }
+"""))
 
-    html.P(
-        "Compare costs, efficacy, and side effects of major autism therapies, "
-        "including NeuroConnect – a proposed nanotechnology-based solution.",
-        style={"color": "#CCCCCC", "textAlign": "center"}
-    ),
+gridOptions = gb.build()
 
-    dag.AgGrid(
-        id="neuro-table",
-        rowData=df.to_dict("records"),
-        columnDefs=[
-            {
-                "headerName": col,
-                "field": col,
-                "sortable": True,
-                "filter": True,
-                "cellStyle": {
-                    "styleConditions": [
-                        {"condition": "params.value > 100000", "style": {"color": "red"}},
-                        {"condition": "params.value < 10000", "style": {"color": "lime"}},
-                        {"condition": "params.colDef.field === 'Efficacy (%)' && params.value >= 80", "style": {"backgroundColor": "#003300"}},
-                        {"condition": "params.colDef.field === 'Efficacy (%)' && params.value <= 40", "style": {"backgroundColor": "#330000"}}
-                    ]
-                } if col in ["Lifetime Cost (USD)", "Efficacy (%)"] else {}
-            } for col in df.columns
-        ],
-        defaultColDef={"resizable": True, "flex": 1},
-        className="ag-theme-alpine-dark",
-        style={"height": "400px", "width": "100%", "marginTop": "20px"}
-    )
-])
+# Render Interactive Table
+st.markdown("### 📊 Interactive Treatment Comparison Table")
+AgGrid(df, gridOptions=gridOptions, enable_enterprise_modules=False, theme='material', height=350, fit_columns_on_grid_load=True)
 
-# ----------------------------------
-# Embed Dash app in Streamlit
-# ----------------------------------
-st.set_page_config(page_title="NeuroConnect Dashboard", layout="wide")
-st.title("🚀 NeuroConnect: Streamlit + Dash Comparison Interface")
-
-st_dash(dash_app, width=1000, height=550)
+# Key Takeaways
+st.markdown("#### 💡 Key Insights")
+st.markdown("""
+- **NeuroConnect** projects significantly higher effectiveness and lower lifetime cost.
+- Traditional therapies often require repeated interventions and carry serious side effects.
+- This visualization supports transparent decision-making and ethical technological innovation.
+""")
