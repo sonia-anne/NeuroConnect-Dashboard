@@ -63,3 +63,5 @@ app.layout = dbc.Container([
         style={"height": "400px", "width": "100%", "marginTop": "20px"}
     )
 ])
+if __name__ == '__main__':
+    app.run_server(debug=True)
