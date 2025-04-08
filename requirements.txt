@@ -1,4 +1,6 @@
+streamlit
+streamlit-dash
 dash
-dash-bootstrap-components
 dash-ag-grid
+dash-bootstrap-components
 pandas
